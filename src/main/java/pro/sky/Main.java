@@ -2,6 +2,10 @@ package pro.sky;
 
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        StringList newStrings = new StringListImpl();
+        for (int i = 0; i < 10; i++) {
+            newStrings.add("Hello world! " + i);
+        }
+        newStrings.print();
     }
 }
