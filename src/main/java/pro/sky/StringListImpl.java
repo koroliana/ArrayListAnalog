@@ -139,35 +139,33 @@ public class StringListImpl implements StringList{
 
     @Override
     public String get(int index) {
-                if (index < 0 || index >= strings.length) {
-                    throw new IndexOutOfBoundsException("Нет ячейки с номером " + index);
-                }
-                if (index >=  strings.length - freeCells) {
-                    throw new StringIsNullException();
-                }
-                return strings[index];
+        if (index < 0 || index >= size()) {
+            throw new IndexOutOfBoundsException("Нет ячейки с номером " + index);
+        }
+        if (strings[index] == null) {
+            throw new StringIsNullException();
+        }
+        return strings[index];
     }
 
-    // Сравнить текущий список с другим.
-    // Вернуть true/false или исключение,
-    // если передан null.
+
+
     @Override
-    public boolean equals(StringList otherList) {
-            if (otherList == null) {
-                throw new IllegalArgumentException("Другой StringList не может быть равен null");
-            }
-            if (this == otherList) {
-                return true;
-            }
-            if (this.size() != otherList.size()) {
+    public boolean equals(StringList otherList) throws StringIsNullException {
+        if (this == otherList) {
+            return true;
+        }
+        if (otherList == null || size() != otherList.size()) {
+            return false;
+        }
+        for (int i = 0; i < size(); i++) {
+            String thisString = get(i);
+            String otherString = otherList.get(i);
+            if ((thisString == null && otherString != null) || !thisString.equals(otherString)) {
                 return false;
             }
-            for (int i = 0; i < strings.length; i++) {
-                if (!strings[i].equals(otherList.get(i))) {
-                    return false;
-                }
-            }
-            return true;
+        }
+        return true;
     }
 
     @Override
