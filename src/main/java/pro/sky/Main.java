@@ -7,5 +7,11 @@ public class Main {
             newStrings.add("Hello world! " + i);
         }
         newStrings.print();
+        System.out.println();
+        IntegerList numbers = new IntegerList();
+        for (int i = 800; i > 700; i= i-17) {
+            numbers.add(i+"1");
+        }
+        numbers.print();
     }
 }
