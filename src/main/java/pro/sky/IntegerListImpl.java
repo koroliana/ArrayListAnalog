@@ -2,11 +2,12 @@ package pro.sky;
 
 import pro.sky.exception.IntegerIsNullException;
 import pro.sky.exception.IntegerNotFoundException;
-import pro.sky.exception.StringListSizeExceededException;
+
+import java.util.Objects;
 
 public class IntegerListImpl implements IntegerList {
     private static final int DEFAULT_SIZE = 10;
-    private final Integer[] numbers;
+    private Integer[] numbers;
     private int freeCells;
 
     public IntegerListImpl() {
@@ -21,13 +22,29 @@ public class IntegerListImpl implements IntegerList {
         this.freeCells = size;
     }
 
+    private void checkItem(Integer item) {
+        if (item == null) {
+            throw new IllegalArgumentException("Integer не может быть null!");
+        }
+    }
+
+    private void grow() {
+        Integer[] extendedNumbers = new Integer[numbers.length + numbers.length/2];
+        int extendedFreeCells = extendedNumbers.length;
+        for (int i = 0; i < numbers.length; i++) {
+            extendedNumbers[i] = numbers[i];
+            extendedFreeCells--;
+        }
+        this.numbers = extendedNumbers;
+        this.freeCells = extendedFreeCells;
+
+    }
+
     @Override
     public Integer add(Integer item) {
-        if (item == null) {
-            throw new IllegalArgumentException("Item cannot be null");
-        }
+        checkItem(item);
         if (freeCells == 0) {
-            throw new StringListSizeExceededException();
+            grow();
         }
         numbers[numbers.length - freeCells] = item;
         freeCells--;
@@ -36,14 +53,12 @@ public class IntegerListImpl implements IntegerList {
 
     @Override
     public Integer add(int index, Integer item) {
-        if (item == null) {
-            throw new IllegalArgumentException("Строка не может быть равна null!");
-        }
+        checkItem(item);
         if (index < 0 || index > numbers.length - 1) {
             throw new IndexOutOfBoundsException("Нет ячейки с номером " + index);
         }
         if (freeCells == 0) {
-            throw new StringListSizeExceededException();
+            grow();
         }
         for (int i = numbers.length - 1; i > index; i--) {
             numbers[i] = numbers[i - 1];
@@ -55,9 +70,7 @@ public class IntegerListImpl implements IntegerList {
 
     @Override
     public Integer set(int index, Integer item) {
-        if (item == null) {
-            throw new IllegalArgumentException("Строка не может быть равна null!");
-        }
+        checkItem(item);
         if (index < 0 || index > numbers.length - 1) {
             throw new IndexOutOfBoundsException("Нет ячейки с номером " + index);
         }
@@ -67,9 +80,7 @@ public class IntegerListImpl implements IntegerList {
 
     @Override
     public Integer remove(Integer item) {
-        if (item == null) {
-            throw new IllegalArgumentException("Строка не может быть равна null!");
-        }
+        checkItem(item);
         int foundIndex;
         for (int i = 0; i < numbers.length; i++) {
             if (numbers[i] != null && numbers[i].equals(item)) {
@@ -99,19 +110,31 @@ public class IntegerListImpl implements IntegerList {
 
     @Override
     public boolean contains(Integer item) {
-        if (item == null) {
-            throw new IllegalArgumentException("Строка не может быть равна null!");
-        }
-        insertionSort();
-        int index = binarySearch(item);
-        return index >= 0;
+        checkItem(item);
+        // insertionSort();
+        Integer[] copy = toArray();
+        quickSort(copy);
+            int low = 0;
+            int high = copy.length - 1;
+
+            while (low <= high) {
+                int mid = (low + high) / 2;
+                Integer midValue = copy[mid];
+
+                if (midValue.equals(item)) {
+                    return true;
+                } else if (midValue < item) {
+                    low = mid + 1;
+                } else {
+                    high = mid - 1;
+                }
+            }
+        return false;
     }
 
     @Override
     public int indexOf(Integer item) {
-        if (item == null) {
-            throw new IllegalArgumentException("Строка не может быть равна null!");
-        }
+        checkItem(item);
         for (int i = 0; i < numbers.length; i++) {
             if (numbers[i] != null && numbers[i].equals(item)) {
                 return i;
@@ -122,9 +145,7 @@ public class IntegerListImpl implements IntegerList {
 
     @Override
     public int lastIndexOf(Integer item) {
-        if (item == null) {
-            throw new IllegalArgumentException("Строка не может быть равна null!");
-        }
+        checkItem(item);
         for (int i = numbers.length - freeCells - 1; i >= 0; i--) {
             if (numbers[i] != null && numbers[i].equals(item)) {
                 return i;
@@ -145,7 +166,7 @@ public class IntegerListImpl implements IntegerList {
     }
 
     @Override
-    public boolean equals(IntegerList otherList) throws IntegerIsNullException {
+    public boolean equals(IntegerList otherList) {
         if (this == otherList) {
             return true;
         }
@@ -153,9 +174,7 @@ public class IntegerListImpl implements IntegerList {
             return false;
         }
         for (int i = 0; i < size(); i++) {
-            Integer thisNumber = get(i);
-            Integer otherNumber = otherList.get(i);
-            if ((thisNumber == null && otherNumber != null) || !thisNumber.equals(otherNumber)) {
+            if (!Objects.equals(get(i), otherList.get(i))) {
                 return false;
             }
         }
@@ -183,9 +202,7 @@ public class IntegerListImpl implements IntegerList {
     @Override
     public Integer[] toArray() {
         Integer[] array = new Integer[numbers.length - freeCells];
-        for (int i = 0; i < array.length; i++) {
-            array[i] = numbers[i];
-        }
+        System.arraycopy(numbers, 0, array, 0, array.length);
         return array;
     }
 
@@ -195,6 +212,7 @@ public class IntegerListImpl implements IntegerList {
         }
     }
 
+    //Сортировка вставкой
     private void insertionSort() {
         for (int i = 1; i < numbers.length - freeCells; i++) {
             Integer key = numbers[i];
@@ -207,24 +225,40 @@ public class IntegerListImpl implements IntegerList {
         }
     }
 
-    private int binarySearch(Integer key) {
+    // Быстрая сортировка
 
-        int low = 0;
-        int high = numbers.length - freeCells - 1;
+    private void quickSort(Integer[] sortableNumbers) {
+        quickSort(sortableNumbers, 0, sortableNumbers.length - 1);
+    }
+    private void quickSort(Integer[] sortableNumbers, int begin, int end) {
+        if (begin < end) {
+            int partitionIndex = partition(sortableNumbers, begin, end);
 
-        while (low <= high) {
-            int mid = (low + high) / 2;
-            Integer midValue = numbers[mid];
+            quickSort(sortableNumbers, begin, partitionIndex - 1);
+            quickSort(sortableNumbers, partitionIndex + 1, end);
+        }
+    }
 
-            if (midValue.equals(key)) {
-                return mid;
-            } else if (midValue < key) {
-                low = mid + 1;
-            } else {
-                high = mid - 1;
+    private int partition(Integer[] sortableNumbers, int begin, int end) {
+        int pivot = sortableNumbers[end];
+        int i = (begin - 1);
+
+        for (int j = begin; j < end; j++) {
+            if (sortableNumbers[j] <= pivot) {
+                i++;
+                swapElements(sortableNumbers, i, j);
             }
         }
 
-        return -1;
+        swapElements(sortableNumbers, i + 1, end);
+        return i + 1;
     }
+
+    private static void swapElements(Integer[] array, int left, int right) {
+        int temp = array[left];
+        array[left] = array[right];
+        array[right] = temp;
+    }
+
+
 }

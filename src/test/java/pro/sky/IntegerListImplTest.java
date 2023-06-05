@@ -6,19 +6,21 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class IntegerListImplTest {
-    private IntegerListImpl list;
+    private final IntegerList list = new IntegerListImpl();
+    private final IntegerList list2 = new IntegerListImpl();
 
     @BeforeEach
     public void setUp() {
-        list = new IntegerListImpl(5);
-    }
-
-    @Test
-    public void testAddAndGet() {
+        list.clear();
+        list2.clear();
         list.add(3);
         list.add(1);
         list.add(5);
 
+    }
+
+    @Test
+    public void testAddAndGet() {
         assertEquals(3, list.get(0));
         assertEquals(1, list.get(1));
         assertEquals(5, list.get(2));
@@ -26,10 +28,6 @@ public class IntegerListImplTest {
 
     @Test
     public void testAddAtIndex() {
-        list.add(3);
-        list.add(1);
-        list.add(5);
-
         list.add(1, 2);
         assertEquals(3, list.get(0));
         assertEquals(2, list.get(1));
@@ -39,10 +37,6 @@ public class IntegerListImplTest {
 
     @Test
     public void testSet() {
-        list.add(3);
-        list.add(1);
-        list.add(5);
-
         list.set(1, 2);
         assertEquals(3, list.get(0));
         assertEquals(2, list.get(1));
@@ -51,9 +45,6 @@ public class IntegerListImplTest {
 
     @Test
     public void testRemove() {
-        list.add(3);
-        list.add(1);
-        list.add(5);
 
         Integer removedItem = list.remove(1);
         assertEquals(1, removedItem);
@@ -63,9 +54,6 @@ public class IntegerListImplTest {
 
     @Test
     public void testRemoveAtIndex() {
-        list.add(3);
-        list.add(1);
-        list.add(5);
 
         Integer removedItem = list.remove(1);
         assertEquals(1, removedItem);
@@ -75,9 +63,6 @@ public class IntegerListImplTest {
 
     @Test
     public void testContains() {
-        list.add(3);
-        list.add(1);
-        list.add(5);
 
         assertTrue(list.contains(1));
         assertFalse(list.contains(2));
@@ -85,9 +70,6 @@ public class IntegerListImplTest {
 
     @Test
     public void testIndexOf() {
-        list.add(3);
-        list.add(1);
-        list.add(5);
 
         assertEquals(1, list.indexOf(1));
         assertEquals(-1, list.indexOf(2));
@@ -95,9 +77,6 @@ public class IntegerListImplTest {
 
     @Test
     public void testLastIndexOf() {
-        list.add(3);
-        list.add(1);
-        list.add(5);
         list.add(1);
 
         assertEquals(3, list.lastIndexOf(1));
@@ -106,30 +85,26 @@ public class IntegerListImplTest {
 
     @Test
     public void testSize() {
-        assertEquals(0, list.size());
+        assertEquals(0, list2.size());
 
-        list.add(3);
-        list.add(1);
-        list.add(5);
+        list2.add(3);
+        list2.add(1);
+        list2.add(5);
 
-        assertEquals(3, list.size());
+        assertEquals(3, list2.size());
     }
 
     @Test
     public void testIsEmpty() {
-        assertTrue(list.isEmpty());
+        assertTrue(list2.isEmpty());
 
-        list.add(3);
+        list2.add(3);
 
         assertFalse(list.isEmpty());
     }
 
     @Test
     public void testClear() {
-        list.add(3);
-        list.add(1);
-        list.add(5);
-
         list.clear();
 
         assertEquals(0, list.size());
@@ -138,9 +113,6 @@ public class IntegerListImplTest {
 
     @Test
     public void testToArray() {
-        list.add(3);
-        list.add(1);
-        list.add(5);
 
         Integer[] array = list.toArray();
 
@@ -152,33 +124,21 @@ public class IntegerListImplTest {
 
     @Test
     public void testEquals() {
-        IntegerListImpl list1 = new IntegerListImpl(5);
-        IntegerListImpl list2 = new IntegerListImpl(5);
-
-        list1.add(3);
-        list1.add(1);
-        list1.add(5);
 
         list2.add(3);
         list2.add(1);
         list2.add(5);
 
-        assertTrue(list1.equals(list2));
+        assertTrue(list.equals(list2));
     }
 
     @Test
     public void testNotEquals() {
-        IntegerListImpl list1 = new IntegerListImpl(5);
-        IntegerListImpl list2 = new IntegerListImpl(5);
-
-        list1.add(3);
-        list1.add(1);
-        list1.add(5);
 
         list2.add(3);
         list2.add(2);
         list2.add(5);
 
-        assertFalse(list1.equals(list2));
+        assertFalse(list.equals(list2));
     }
 }
