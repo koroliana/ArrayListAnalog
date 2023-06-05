@@ -8,9 +8,9 @@ public class Main {
         }
         newStrings.print();
         System.out.println();
-        IntegerList numbers = new IntegerList();
+        IntegerList numbers = new IntegerListImpl();
         for (int i = 800; i > 700; i= i-17) {
-            numbers.add(i+"1");
+            numbers.add(i+1);
         }
         numbers.print();
     }
